@@ -403,13 +403,18 @@ mod_gene_verse_server <- function(id, input_sidebarmenu, input.data, gene.table,
                                           inline = FALSE),
                        colourInput(session$ns("col_high"),
                                    label = "Color high score:",
-                                   value = "#131780"),
+                                   value = "#EF8A62"),
+                       #colourInput(session$ns("col_mid"), 
+                       #            label = "Color mid score:", 
+                       #            value = "#F7F7F7"), 
                        colourInput(session$ns("col_low"),
                                    label = "Color low score:",
-                                   value = "aquamarine"),
+                                   value = "#67A9CF"),
                        hr(),
                        textInput(session$ns("dot_tag"), label = "File tag for saving:",
                                  placeholder = "CXCL_family"),
+                       numericInput(session$ns("tiff_res"), label = "Tiff image resolution:",
+                                 value = 75),
                        actionButton(session$ns("download_dotplot_tiff"),
                                       "DotPlot (tiff)", icon = icon("download")),
                        actionButton(session$ns("download_dotplot_pdf"),
@@ -442,6 +447,7 @@ mod_gene_verse_server <- function(id, input_sidebarmenu, input.data, gene.table,
         getDotPlot_selInt(data.dotplot.filt(),
                           clust.order = unique(data.dotplot.filt()$clustA),
                           low_color = input$col_low,
+                          #mid_color = input$col_mid,
                           high_color = input$col_high)
       })
       rv$dotplot <- dot_list()$p
@@ -491,7 +497,8 @@ mod_gene_verse_server <- function(id, input_sidebarmenu, input.data, gene.table,
       file <- file.path(out_folder(), "gene_verse", 
                         paste("IntPairs_selected", input$dot_tag, "dotplot.tiff", sep = "_"))
       out <- tryCatch({
-        tiff(file, height = max(500, 30*rv$n_rows_dot))
+        tiff_res_f = input$tiff_res/75
+        tiff(file, height = max(500, 30*rv$n_rows_dot)*tiff_res_f, width = 480*tiff_res_f, res = input$tiff_res)
         plot(rv$dotplot)
         dev.off()
         

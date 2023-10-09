@@ -257,6 +257,7 @@ getNumLR <- function(gene.table, type){
 #' @param selected_tab selected rows of filt.data by selection from gene table
 #' @param clust.order how to order clusters
 #' @param low_color of dotplot
+#' @param mid_color of dotplot
 #' @param high_color of dotplot
 #'
 #' @return list with modified selected data and ggplot2 dotplot
@@ -264,19 +265,23 @@ getNumLR <- function(gene.table, type){
 #' @import ggplot2 
 
 getDotPlot_selInt <- function(selected_tab, clust.order, 
-                              low_color = "aquamarine", 
-                              high_color = "#131780"){
+                              low_color = "#67A9CF", 
+                              #mid_color = "#F7F7F7", 
+                              high_color = "#EF8A62"){
     selected_tab$groups_x <- factor(selected_tab$clustA, levels = clust.order)
     selected_tab <- selected_tab %>%
         unite(col="cluster_pair", clustA:clustB, sep = "::", remove = TRUE)
     p <- ggplot(selected_tab, aes(x = int_pair, y = cluster_pair)) +
-        geom_point(aes(color = score, size=3.5)) + 
+        geom_point(aes(color = score), size=10) + 
         theme_minimal() +
+        #scale_color_gradient2(low = low_color, mid = mid_color, high = high_color) + 
         scale_color_gradient(low = low_color, high = high_color) + 
         facet_grid(groups_x ~ ., scales = "free", space = "free") +
         theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), 
               text = element_text(size=20),
-              strip.text = element_blank()) +
+              strip.text = element_blank(), 
+              panel.grid = element_blank(), 
+              panel.border = element_rect(fill=NA)) +
         guides(size = "none") + 
         labs(x = "Int-pairs", y = "Cluster-pairs")
     
